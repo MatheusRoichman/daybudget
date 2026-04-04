@@ -1,0 +1,53 @@
+"use server";
+
+import { db } from "@/lib/db";
+import { campaigns } from "@/lib/db/schema";
+import { createCampaignSchema } from "@/lib/validations";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+export type CampaignActionState = {
+  error?: Record<string, string[]>;
+  success?: boolean;
+};
+
+export async function createCampaign(
+  _prevState: CampaignActionState,
+  formData: FormData
+): Promise<CampaignActionState> {
+  const raw = {
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    startDate: formData.get("startDate"),
+    endDate: formData.get("endDate"),
+  };
+
+  const parsed = createCampaignSchema.safeParse(raw);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const path = String(issue.path[0]);
+      if (!fieldErrors[path]) fieldErrors[path] = [];
+      fieldErrors[path].push(issue.message);
+    }
+    return { error: fieldErrors };
+  }
+
+  const result = db
+    .insert(campaigns)
+    .values(parsed.data)
+    .returning()
+    .all();
+
+  revalidatePath("/campaigns");
+  revalidatePath("/");
+  redirect(`/campaigns/${result[0].id}`);
+}
+
+export async function deleteCampaign(id: number) {
+  db.delete(campaigns).where(eq(campaigns.id, id)).run();
+  revalidatePath("/campaigns");
+  revalidatePath("/");
+  redirect("/campaigns");
+}
