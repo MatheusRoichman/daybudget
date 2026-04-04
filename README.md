@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DayBudget
 
-## Getting Started
+Gerenciador de finanças pessoais baseado em **campanhas de orçamento com limite diário acumulativo**.
 
-First, run the development server:
+## O que é?
+
+DayBudget permite criar campanhas de orçamento: você define um valor total e um período de datas. A aplicação calcula automaticamente o limite diário e rastreia seus gastos com saldo acumulativo.
+
+- Se você gastou **menos** que o limite do dia, o saldo restante é adicionado ao dia seguinte
+- Se gastou **mais**, o excesso é descontado do dia seguinte
+
+**Exemplo:** R$ 3.000 entre 06/04 e 30/04 = 25 dias = R$ 120/dia
+- Dia 06/04: gastou R$ 50 → sobram R$ 70
+- Dia 07/04: tem R$ 190 disponíveis (R$ 120 + R$ 70)
+
+## Como instalar
 
 ```bash
+# Clonar o repositório
+git clone <repo-url>
+cd daybudget
+
+# Instalar dependências
+npm install
+
+# Criar o banco de dados
+npm run db:push
+
+# Iniciar o servidor de desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Como usar
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Dashboard (/)
+A página inicial mostra um resumo de todas as campanhas ativas, com o saldo agregado disponível hoje. Se alguma campanha está com saldo negativo, um alerta visual é exibido.
 
-## Learn More
+### Campanhas (/campaigns)
+Lista todas as campanhas organizadas em abas: Ativas, Futuras e Encerradas. Cada card mostra o saldo disponível, limite diário e progresso.
 
-To learn more about Next.js, take a look at the following resources:
+### Criar Campanha (/campaigns/new)
+Formulário para criar uma nova campanha com:
+- Nome da campanha
+- Valor total do orçamento
+- Data de início e fim
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Detalhe da Campanha (/campaigns/[id])
+Página completa com:
+- Saldo disponível hoje (destaque visual)
+- Estatísticas: limite diário, orçamento total, total gasto, dias restantes
+- Gráfico de linha mostrando a evolução do saldo
+- Formulário para adicionar gastos
+- Lista de todos os gastos com opção de excluir
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts disponíveis
 
-## Deploy on Vercel
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Build de produção |
+| `npm run start` | Servidor de produção |
+| `npm run db:push` | Aplicar schema ao banco |
+| `npm run db:generate` | Gerar migrations |
+| `npm run db:studio` | Abrir Drizzle Studio |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router, TypeScript)
+- Drizzle ORM + SQLite (better-sqlite3)
+- shadcn/ui + Tailwind CSS
+- Zod (validação)
+- date-fns (datas)
+- Recharts (gráficos)
