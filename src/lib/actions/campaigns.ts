@@ -34,7 +34,7 @@ export async function createCampaign(
 		return { error: fieldErrors };
 	}
 
-	const result = db.insert(campaigns).values(parsed.data).returning().all();
+	const result = await db.insert(campaigns).values(parsed.data).returning();
 
 	revalidatePath("/campaigns");
 	revalidatePath("/");
