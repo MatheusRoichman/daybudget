@@ -1,16 +1,17 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 import path from "path";
 import fs from "fs";
+import { createClient } from "@libsql/client";
 
 const dataDir = path.join(process.cwd(), "data");
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const sqlite = new Database(path.join(dataDir, "daybudget.db"));
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+const client = createClient({
+  url: process.env.DATABASE_URL!,
+  authToken: process.env.DATABASE_AUTH_TOKEN!,
+});
 
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(client, { schema });
