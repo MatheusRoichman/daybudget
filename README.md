@@ -76,6 +76,7 @@ Página completa com:
 | `bun run dev` | Servidor de desenvolvimento |
 | `bun run build` | Build de produção |
 | `bun run start` | Servidor de produção |
+| `bun run lint` | Lint + checagem de formatação (Biome) |
 | `bun run db:push` | Aplicar schema ao banco |
 | `bun run db:generate` | Gerar migrations |
 | `bun run db:studio` | Abrir Drizzle Studio |
@@ -85,6 +86,7 @@ Página completa com:
 - Next.js 16 (App Router, TypeScript)
 - Drizzle ORM + Turso (libSQL)
 - shadcn/ui + Tailwind CSS
+- Biome (lint + formatação)
 - Zod (validação)
 - date-fns (datas)
 - Recharts (gráficos)

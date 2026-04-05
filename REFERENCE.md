@@ -27,6 +27,7 @@ src/
     dashboard/                      # Componentes do dashboard
     ui/                             # shadcn/ui (gerado) + balance-text
 drizzle.config.ts                   # Configuração do Drizzle Kit
+biome.json                          # Configuração do Biome (lint + formatação)
 ```
 
 ## Lógica de Cálculo (`src/lib/budget.ts`)
@@ -149,6 +150,12 @@ db.insert(campaigns).values({
 - Compatível com o driver `@libsql/client` (mesmo protocolo do SQLite)
 - Sem necessidade de gerenciar infraestrutura local
 - Free tier suficiente para desenvolvimento e uso pessoal
+
+### Por que Biome?
+- Substitui ESLint + Prettier em uma única ferramenta
+- Significativamente mais rápido (escrito em Rust)
+- Configuração unificada em `biome.json`
+- Suporte a TypeScript, JSX e CSS (com `tailwindDirectives`)
 
 ### Por que date-fns?
 - Tree-shakeable (importa apenas funções usadas)
