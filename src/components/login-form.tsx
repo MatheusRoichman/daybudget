@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { login } from "@/app/actions/auth";
 import type { LoginState } from "@/app/actions/auth";
+import { login } from "@/app/actions/auth";
 
 export function LoginForm() {
 	const [state, action, pending] = useActionState<

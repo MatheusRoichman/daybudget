@@ -92,7 +92,10 @@ export default async function CampaignsPage() {
 							totalSpent={spent}
 							daysUntilStart={
 								status === "future"
-									? differenceInCalendarDays(parseISO(c.startDate), parseISO(today))
+									? differenceInCalendarDays(
+											parseISO(c.startDate),
+											parseISO(today),
+										)
 									: undefined
 							}
 							percentUsed={percentUsed}
