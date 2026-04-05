@@ -22,7 +22,6 @@ export function CampaignListItem({
   availableBalance,
   dailyLimit,
   totalDays,
-  currentDay,
   totalSpent = 0,
   daysUntilStart,
   percentUsed = 0,

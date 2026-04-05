@@ -1,12 +1,10 @@
 import { differenceInCalendarDays, parseISO } from "date-fns";
-import type { CampaignStatus } from "@/lib/budget";
 
 interface BalanceDisplayProps {
-  status: CampaignStatus;
   startDate: string;
 }
 
-export function FutureCampaignBanner({ startDate }: { startDate: string }) {
+export function FutureCampaignBanner({ startDate }: BalanceDisplayProps) {
   const daysUntil = differenceInCalendarDays(parseISO(startDate), new Date());
   return (
     <div className="py-8 text-center mb-10">

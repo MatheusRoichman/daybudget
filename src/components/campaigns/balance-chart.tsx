@@ -17,6 +17,7 @@ interface BalanceChartProps {
   data: DailyBreakdown[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -24,6 +25,7 @@ function CustomTooltip({ active, payload, label }: any) {
       <p className="text-on-surface-variant text-xs mb-1">
         {formatDateShort(label)}
       </p>
+      { /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ }
       {payload.map((entry: any) => (
         <p key={entry.dataKey} style={{ color: entry.color }}>
           {entry.name}: {formatCurrency(entry.value)}
