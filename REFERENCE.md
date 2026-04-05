@@ -14,7 +14,7 @@ src/
   lib/
     db/
       schema.ts                     # Schema Drizzle (campaigns, expenses)
-      index.ts                      # Cliente SQLite + Drizzle
+      index.ts                      # Cliente Turso (libSQL) + Drizzle
     budget.ts                       # Lógica pura de cálculo de saldo
     validations.ts                  # Schemas Zod para formulários
     format.ts                       # Formatação de moeda e data
@@ -100,20 +100,27 @@ getAvailableBalance(campaign, expenses, "2026-04-07");
 | date | TEXT (NOT NULL) | Data do gasto (YYYY-MM-DD) |
 | created_at | TEXT (NOT NULL) | Timestamp de criação (ISO 8601) |
 
+## Banco de Dados
+
+O banco é hospedado no **Turso** (libSQL remoto). As credenciais são lidas das variáveis de ambiente:
+
+| Variável | Descrição |
+|----------|-----------|
+| `DATABASE_URL` | URL do banco no formato `libsql://<db-name>.turso.io` |
+| `DATABASE_AUTH_TOKEN` | Token JWT de autenticação do Turso |
+
 ## Migrations
 
 ```bash
 # Aplicar schema diretamente (dev)
-npm run db:push
+bun run db:push
 
 # Gerar migration SQL
-npm run db:generate
+bun run db:generate
 
 # Interface visual do banco
-npm run db:studio
+bun run db:studio
 ```
-
-O banco fica em `./data/daybudget.db` (ignorado pelo git).
 
 ## Adicionando uma campanha programaticamente
 
@@ -137,10 +144,11 @@ db.insert(campaigns).values({
 - Leve e sem overhead de runtime pesado
 - Relational queries integradas
 
-### Por que SQLite em dev?
-- Zero configuração — arquivo local, sem processo separado
-- Ideal para protótipos e desenvolvimento local
-- Schema preparado para migrar para PostgreSQL (datas como TEXT → DATE, amounts como REAL → NUMERIC)
+### Por que Turso?
+- Banco libSQL remoto com baixa latência via réplicas de borda
+- Compatível com o driver `@libsql/client` (mesmo protocolo do SQLite)
+- Sem necessidade de gerenciar infraestrutura local
+- Free tier suficiente para desenvolvimento e uso pessoal
 
 ### Por que date-fns?
 - Tree-shakeable (importa apenas funções usadas)

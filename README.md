@@ -21,16 +21,31 @@ git clone <repo-url>
 cd daybudget
 
 # Instalar dependências
-npm install
+bun install
 
-# Criar o banco de dados
-npm run db:push
+# Configurar variáveis de ambiente
+cp .env.example .env
+# Preencha DATABASE_URL e DATABASE_AUTH_TOKEN com as credenciais do Turso
+
+# Aplicar schema ao banco remoto
+bun run db:push
 
 # Iniciar o servidor de desenvolvimento
-npm run dev
+bun run dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+## Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz com as seguintes variáveis (obrigatórias):
+
+| Variável | Descrição |
+|----------|-----------|
+| `DATABASE_URL` | URL do banco Turso no formato `libsql://<db-name>.turso.io` |
+| `DATABASE_AUTH_TOKEN` | Token de autenticação gerado no painel do Turso |
+
+Para obter essas credenciais, acesse o [painel do Turso](https://app.turso.tech) e crie ou selecione um banco de dados.
 
 ## Como usar
 
@@ -58,17 +73,17 @@ Página completa com:
 
 | Comando | Descrição |
 |---------|-----------|
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm run build` | Build de produção |
-| `npm run start` | Servidor de produção |
-| `npm run db:push` | Aplicar schema ao banco |
-| `npm run db:generate` | Gerar migrations |
-| `npm run db:studio` | Abrir Drizzle Studio |
+| `bun run dev` | Servidor de desenvolvimento |
+| `bun run build` | Build de produção |
+| `bun run start` | Servidor de produção |
+| `bun run db:push` | Aplicar schema ao banco |
+| `bun run db:generate` | Gerar migrations |
+| `bun run db:studio` | Abrir Drizzle Studio |
 
 ## Stack
 
 - Next.js 16 (App Router, TypeScript)
-- Drizzle ORM + SQLite (better-sqlite3)
+- Drizzle ORM + Turso (libSQL)
 - shadcn/ui + Tailwind CSS
 - Zod (validação)
 - date-fns (datas)
