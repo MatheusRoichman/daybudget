@@ -1,0 +1,117 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
+	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"files": { "ignoreUnknown": false },
+	"formatter": { "enabled": true, "indentStyle": "tab" },
+	"linter": {
+		"enabled": true,
+		"includes": ["**", "!.next/**", "!out/**", "!build/**", "!next-env.d.ts"],
+		"rules": {
+			"recommended": false,
+			"complexity": { "noUselessTypeConstraint": "error" },
+			"correctness": {
+				"noNextAsyncClientComponent": "warn",
+				"noUnusedVariables": "error"
+			},
+			"performance": {
+				"noImgElement": "warn",
+				"noUnwantedPolyfillio": "warn",
+				"useGoogleFontPreconnect": "warn"
+			},
+			"style": {
+				"noCommonJs": "error",
+				"noHeadElement": "warn",
+				"noNamespace": "error",
+				"useArrayLiterals": "error",
+				"useAsConstAssertion": "error"
+			},
+			"suspicious": {
+				"noDocumentImportInPage": "error",
+				"noExplicitAny": "error",
+				"noExtraNonNullAssertion": "error",
+				"noHeadImportInDocument": "error",
+				"noMisleadingInstantiator": "error",
+				"noNonNullAssertedOptionalChain": "error",
+				"noUnsafeDeclarationMerging": "error",
+				"noUnusedExpressions": "off",
+				"useGoogleFontDisplay": "warn",
+				"useNamespaceKeyword": "error"
+			}
+		}
+	},
+	"javascript": { "formatter": { "quoteStyle": "double" } },
+	"overrides": [
+		{
+			"includes": ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noAriaUnsupportedElements": "warn",
+						"useAltText": "warn",
+						"useAriaPropsForRole": "warn",
+						"useAriaPropsSupportedByRole": "warn",
+						"useValidAriaProps": "warn",
+						"useValidAriaValues": "warn"
+					},
+					"correctness": {
+						"noChildrenProp": "error",
+						"noNextAsyncClientComponent": "warn",
+						"useExhaustiveDependencies": "warn",
+						"useHookAtTopLevel": "error",
+						"useJsxKeyInIterable": "error"
+					},
+					"performance": {
+						"noImgElement": "warn",
+						"noUnwantedPolyfillio": "warn",
+						"useGoogleFontPreconnect": "warn"
+					},
+					"security": { "noDangerouslySetInnerHtmlWithChildren": "error" },
+					"style": { "noHeadElement": "warn" },
+					"suspicious": {
+						"noCommentText": "error",
+						"noDocumentImportInPage": "error",
+						"noDuplicateJsxProps": "error",
+						"noHeadImportInDocument": "error",
+						"useGoogleFontDisplay": "warn"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+			"linter": {
+				"rules": {
+					"complexity": { "noArguments": "error" },
+					"correctness": {
+						"noConstAssign": "off",
+						"noGlobalObjectCalls": "off",
+						"noInvalidBuiltinInstantiation": "off",
+						"noInvalidConstructorSuper": "off",
+						"noSetterReturn": "off",
+						"noUndeclaredVariables": "off",
+						"noUnreachable": "off",
+						"noUnreachableSuper": "off"
+					},
+					"style": { "useConst": "error" },
+					"suspicious": {
+						"noClassAssign": "off",
+						"noDuplicateClassMembers": "off",
+						"noDuplicateObjectKeys": "off",
+						"noDuplicateParameters": "off",
+						"noFunctionAssign": "off",
+						"noImportAssign": "off",
+						"noRedeclare": "off",
+						"noUnsafeNegation": "off",
+						"noVar": "error",
+						"noWith": "off",
+						"useGetterReturn": "off"
+					}
+				}
+			}
+		}
+	],
+	"assist": {
+		"enabled": true,
+		"actions": { "source": { "organizeImports": "on" } }
+	}
+}
