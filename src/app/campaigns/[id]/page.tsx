@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { AddExpenseForm } from "@/components/campaigns/add-expense-form";
 import { BalanceChart } from "@/components/campaigns/balance-chart";
@@ -15,6 +14,7 @@ import {
 	getFinalBalance,
 	getTotalSpent,
 } from "@/lib/budget";
+import { getToday } from "@/lib/get-today";
 import { getCampaignWithExpenses } from "@/lib/queries";
 
 interface PageProps {
@@ -30,7 +30,7 @@ export default async function CampaignDetailPage({ params }: PageProps) {
 	if (!result) notFound();
 
 	const { expenses, ...campaign } = result;
-	const today = format(new Date(), "yyyy-MM-dd");
+	const today = await getToday();
 	const status = getCampaignStatus(campaign, today);
 	const totalDays = getCampaignDays(campaign);
 	const expenseEntries = expenses.map((e) => ({

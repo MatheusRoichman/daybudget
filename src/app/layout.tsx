@@ -4,6 +4,7 @@ import { DM_Mono, Sora } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
+import { TimezoneSync } from "@/components/timezone-sync";
 
 const sora = Sora({
 	variable: "--font-sora",
@@ -60,6 +61,7 @@ export default function RootLayout({
 
 				{/* Bottom Navigation */}
 				<BottomNav />
+				<TimezoneSync />
 			</body>
 		</html>
 	);

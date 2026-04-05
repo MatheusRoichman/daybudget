@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { differenceInCalendarDays, format, parseISO } from "date-fns";
+import { differenceInCalendarDays, parseISO } from "date-fns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { CampaignListItem } from "@/components/campaigns/campaign-list-item";
@@ -16,13 +16,14 @@ import {
 	getTotalSpent,
 } from "@/lib/budget";
 import type { Campaign, Expense } from "@/lib/db/schema";
+import { getToday } from "@/lib/get-today";
 import { getAllCampaigns } from "@/lib/queries";
 
 type CampaignWithExpenses = Campaign & { expenses: Expense[] };
 
 export default async function CampaignsPage() {
 	const campaigns = await getAllCampaigns();
-	const today = format(new Date(), "yyyy-MM-dd");
+	const today = await getToday();
 
 	const grouped: Record<CampaignStatus, CampaignWithExpenses[]> = {
 		active: [],
@@ -91,7 +92,7 @@ export default async function CampaignsPage() {
 							totalSpent={spent}
 							daysUntilStart={
 								status === "future"
-									? differenceInCalendarDays(parseISO(c.startDate), new Date())
+									? differenceInCalendarDays(parseISO(c.startDate), parseISO(today))
 									: undefined
 							}
 							percentUsed={percentUsed}

@@ -14,18 +14,7 @@ export const createCampaignSchema = z
 	.refine((data) => new Date(data.endDate) > new Date(data.startDate), {
 		message: "Data final deve ser após a data inicial",
 		path: ["endDate"],
-	})
-	.refine(
-		(data) => {
-			const today = new Date();
-			today.setHours(0, 0, 0, 0);
-			return new Date(data.startDate) >= today;
-		},
-		{
-			message: "Data inicial não pode ser no passado",
-			path: ["startDate"],
-		},
-	);
+	});
 
 export const createExpenseSchema = z.object({
 	campaignId: z.coerce.number().int().positive(),

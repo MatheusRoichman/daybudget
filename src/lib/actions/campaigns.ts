@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { campaigns } from "@/lib/db/schema";
+import { getToday } from "@/lib/get-today";
 import { createCampaignSchema } from "@/lib/validations";
 
 export type CampaignActionState = {
@@ -32,6 +33,11 @@ export async function createCampaign(
 			fieldErrors[path].push(issue.message);
 		}
 		return { error: fieldErrors };
+	}
+
+	const today = await getToday();
+	if (parsed.data.startDate < today) {
+		return { error: { startDate: ["Data inicial não pode ser no passado"] } };
 	}
 
 	const result = await db.insert(campaigns).values(parsed.data).returning();

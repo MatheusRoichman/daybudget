@@ -1,6 +1,5 @@
 export const dynamic = "force-dynamic";
 
-import { format } from "date-fns";
 import Link from "next/link";
 import { CampaignSummaryCard } from "@/components/campaigns/campaign-summary-card";
 import { AggregatedBalance } from "@/components/dashboard/aggregated-balance";
@@ -11,10 +10,11 @@ import {
 	getCurrentDay,
 	getDailyLimit,
 } from "@/lib/budget";
+import { getToday } from "@/lib/get-today";
 import { getActiveCampaigns } from "@/lib/queries";
 
 export default async function DashboardPage() {
-	const today = format(new Date(), "yyyy-MM-dd");
+	const today = await getToday();
 	const activeCampaigns = await getActiveCampaigns(today);
 
 	const campaignsWithBalance = activeCampaigns.map((c) => {
