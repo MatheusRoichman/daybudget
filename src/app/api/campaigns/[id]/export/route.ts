@@ -5,6 +5,7 @@ import { getCampaignDays, getDailyLimit, getTotalSpent } from "@/lib/budget";
 import { getCampaignWithExpenses } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 function sanitizeFilename(name: string): string {
 	return name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -45,11 +46,11 @@ export async function GET(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	const { id } = await params;
-	const campaignId = parseInt(id, 10);
 
-	if (isNaN(campaignId)) {
+	if (!/^\d+$/.test(id)) {
 		return new Response("ID de campanha inválido", { status: 400 });
 	}
+	const campaignId = parseInt(id, 10);
 
 	const result = await getCampaignWithExpenses(campaignId);
 	if (!result) {
@@ -150,6 +151,7 @@ function buildCSV(
 		headers: {
 			"Content-Type": "text/csv; charset=utf-8",
 			"Content-Disposition": `attachment; filename="${baseName}_gastos.csv"`,
+			"Cache-Control": "no-store",
 		},
 	});
 }
@@ -207,6 +209,7 @@ function buildXLS(
 			"Content-Type":
 				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			"Content-Disposition": `attachment; filename="${baseName}_gastos.xlsx"`,
+			"Cache-Control": "no-store",
 		},
 	});
 }
@@ -249,6 +252,7 @@ function buildPDF(
 						headers: {
 							"Content-Type": "application/pdf",
 							"Content-Disposition": `attachment; filename="${baseName}_gastos.pdf"`,
+							"Cache-Control": "no-store",
 						},
 					}),
 				);
@@ -343,31 +347,36 @@ function buildPDF(
 			const tableX = 50;
 			let tableY = doc.y;
 
-			// Header row
-			doc.rect(tableX, tableY, pageWidth, 18).fill("#f0f0f0");
-			doc
-				.fontSize(8)
-				.font("Helvetica-Bold")
-				.fillColor("#333333")
-				.text("DATA", tableX + 4, tableY + 4, { width: colDate })
-				.text("DESCRIÇÃO", tableX + colDate + 4, tableY + 4, {
-					width: colDesc,
-				})
-				.text("VALOR", tableX + colDate + colDesc + 4, tableY + 4, {
-					width: colAmt - 8,
-					align: "right",
-				});
+			const renderTableHeader = (y: number) => {
+				doc.rect(tableX, y, pageWidth, 18).fill("#f0f0f0");
+				doc
+					.fontSize(8)
+					.font("Helvetica-Bold")
+					.fillColor("#333333")
+					.text("DATA", tableX + 4, y + 4, { width: colDate, lineBreak: false })
+					.text("DESCRIÇÃO", tableX + colDate + 4, y + 4, {
+						width: colDesc,
+						lineBreak: false,
+					})
+					.text("VALOR", tableX + colDate + colDesc + 4, y + 4, {
+						width: colAmt - 8,
+						align: "right",
+						lineBreak: false,
+					});
+				return y + 18;
+			};
 
-			tableY += 18;
+			// Header row
+			tableY = renderTableHeader(tableY);
 
 			// Data rows
 			for (let i = 0; i < expenses.length; i++) {
 				const e = expenses[i];
 
-				// Page break check (leave 80pt for total row + margins)
+				// Page break — re-render header on the new page
 				if (tableY > doc.page.height - 130) {
 					doc.addPage();
-					tableY = 50;
+					tableY = renderTableHeader(50);
 				}
 
 				const rowBg = i % 2 === 0 ? "#ffffff" : "#fafafa";
@@ -379,9 +388,11 @@ function buildPDF(
 					.fillColor("#000000")
 					.text(formatDatePtBR(e.date), tableX + 4, tableY + 4, {
 						width: colDate,
+						lineBreak: false,
 					})
 					.text(e.description, tableX + colDate + 4, tableY + 4, {
 						width: colDesc,
+						lineBreak: false,
 						ellipsis: true,
 					})
 					.text(
@@ -391,6 +402,7 @@ function buildPDF(
 						{
 							width: colAmt - 8,
 							align: "right",
+							lineBreak: false,
 						},
 					);
 

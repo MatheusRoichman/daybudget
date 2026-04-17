@@ -13,10 +13,12 @@ const FORMATS = [
 	{ key: "pdf", label: "PDF" },
 ] as const;
 
-export function ExportMenu({ campaignId }: ExportMenuProps) {
-	const [loading, setLoading] = useState<string | null>(null);
+type ExportFormat = (typeof FORMATS)[number]["key"];
 
-	async function handleExport(format: string) {
+export function ExportMenu({ campaignId }: ExportMenuProps) {
+	const [loading, setLoading] = useState<ExportFormat | null>(null);
+
+	async function handleExport(format: ExportFormat) {
 		setLoading(format);
 		try {
 			const res = await fetch(
