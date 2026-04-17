@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { deleteExpense } from "@/lib/actions/expenses";
 import type { Expense } from "@/lib/db/schema";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { ExportMenu } from "./export-menu";
 
 interface ExpensesListProps {
 	expenses: Expense[];
@@ -21,9 +22,12 @@ export function ExpensesList({ expenses, campaignId }: ExpensesListProps) {
 				<h3 className="text-sm font-bold tracking-tight uppercase font-sora">
 					Gastos Recentes
 				</h3>
-				<span className="text-xs text-on-surface-variant font-mono">
-					{expenses.length} transaç{expenses.length !== 1 ? "ões" : "ão"}
-				</span>
+				<div className="flex items-center gap-3">
+					<ExportMenu campaignId={campaignId} />
+					<span className="text-xs text-on-surface-variant font-mono">
+						{expenses.length} transaç{expenses.length !== 1 ? "ões" : "ão"}
+					</span>
+				</div>
 			</div>
 
 			{sorted.length === 0 ? (
