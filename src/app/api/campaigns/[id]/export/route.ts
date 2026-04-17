@@ -17,10 +17,12 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer {
 }
 
 function csvEscape(value: string): string {
-	if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-		return `"${value.replace(/"/g, '""')}"`;
+	// Prefix formula-injection characters so spreadsheet apps don't execute them
+	const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+	if (safe.includes(",") || safe.includes('"') || safe.includes("\n")) {
+		return `"${safe.replace(/"/g, '""')}"`;
 	}
-	return value;
+	return safe;
 }
 
 function formatBRL(amount: number): string {
@@ -80,7 +82,7 @@ export async function GET(
 				dailyLimit,
 				baseName,
 			);
-		case "xls":
+		case "xlsx":
 			return buildXLS(
 				campaign,
 				sortedExpenses,
@@ -99,7 +101,7 @@ export async function GET(
 				baseName,
 			);
 		default:
-			return new Response("Formato inválido. Use csv, xls ou pdf.", {
+			return new Response("Formato inválido. Use csv, xlsx ou pdf.", {
 				status: 400,
 			});
 	}
@@ -227,18 +229,32 @@ function buildPDF(
 	return new Promise((resolve) => {
 		const doc = new PDFDocument({ margin: 50, size: "A4" });
 		const chunks: Buffer[] = [];
+		let settled = false;
+
+		const fail = () => {
+			if (settled) return;
+			settled = true;
+			resolve(new Response("Falha ao gerar o PDF.", { status: 500 }));
+		};
 
 		doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+		doc.on("error", fail);
 		doc.on("end", () => {
-			const pdf = Buffer.concat(chunks);
-			resolve(
-				new Response(toArrayBuffer(pdf), {
-					headers: {
-						"Content-Type": "application/pdf",
-						"Content-Disposition": `attachment; filename="${baseName}_gastos.pdf"`,
-					},
-				}),
-			);
+			if (settled) return;
+			try {
+				const pdf = Buffer.concat(chunks);
+				settled = true;
+				resolve(
+					new Response(toArrayBuffer(pdf), {
+						headers: {
+							"Content-Type": "application/pdf",
+							"Content-Disposition": `attachment; filename="${baseName}_gastos.pdf"`,
+						},
+					}),
+				);
+			} catch {
+				fail();
+			}
 		});
 
 		const pageWidth = doc.page.width - 100; // left + right margin = 100

@@ -9,7 +9,7 @@ interface ExportMenuProps {
 
 const FORMATS = [
 	{ key: "csv", label: "CSV" },
-	{ key: "xls", label: "XLS" },
+	{ key: "xlsx", label: "XLS" },
 	{ key: "pdf", label: "PDF" },
 ] as const;
 
@@ -22,10 +22,20 @@ export function ExportMenu({ campaignId }: ExportMenuProps) {
 			const res = await fetch(
 				`/api/campaigns/${campaignId}/export?format=${format}`,
 			);
-			if (!res.ok) throw new Error("Falha ao gerar exportação");
+
+			const disposition = res.headers.get("content-disposition") ?? "";
+			const contentType = res.headers.get("content-type") ?? "";
+			// If we got redirected to /login or received HTML, session expired
+			if (
+				!res.ok ||
+				res.redirected ||
+				/\btext\/html\b/i.test(contentType) ||
+				!/attachment/i.test(disposition)
+			) {
+				throw new Error("Resposta inválida");
+			}
 
 			const blob = await res.blob();
-			const disposition = res.headers.get("content-disposition") ?? "";
 			const match = disposition.match(/filename="([^"]+)"/);
 			const filename = match?.[1] ?? `campanha_${campaignId}_gastos.${format}`;
 
@@ -33,8 +43,10 @@ export function ExportMenu({ campaignId }: ExportMenuProps) {
 			const a = document.createElement("a");
 			a.href = url;
 			a.download = filename;
+			document.body.appendChild(a);
 			a.click();
-			URL.revokeObjectURL(url);
+			a.remove();
+			setTimeout(() => URL.revokeObjectURL(url), 0);
 		} catch {
 			// silently fail — the browser will show a download error if needed
 		} finally {
